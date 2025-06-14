@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { 
   PlayCircle, 
@@ -830,7 +830,7 @@ function example() {
   }
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -841,6 +841,8 @@ export default function DashboardPage() {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
   const [currentModule, setCurrentModule] = useState<Module | null>(null)
   const [testMode, setTestMode] = useState(false)
+  const [expandedModule, setExpandedModule] = useState<string | null>(null)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   
   useEffect(() => {
     // Check if just subscribed
@@ -905,7 +907,7 @@ export default function DashboardPage() {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center">
         <div className="text-white">Loading...</div>
       </div>
     )
@@ -1192,5 +1194,17 @@ export default function DashboardPage() {
         </main>
       </div>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   )
 } 
